@@ -1,0 +1,180 @@
+docker-compose up --build
+[+] Building 1.2s (12/12) FINISHED                                                                                                                                                                                                                  
+ => [internal] load local bake definitions                                                                                                                                                                                                     0.0s
+ => => reading from stdin 701B                                                                                                                                                                                                                 0.0s
+ => [internal] load build definition from Dockerfile                                                                                                                                                                                           0.0s
+ => => transferring dockerfile: 206B                                                                                                                                                                                                           0.0s
+ => [internal] load metadata for docker.io/library/python:3.12-slim                                                                                                                                                                            1.0s
+ => [internal] load .dockerignore                                                                                                                                                                                                              0.0s
+ => => transferring context: 2B                                                                                                                                                                                                                0.0s
+ => [1/5] FROM docker.io/library/python:3.12-slim@sha256:d75c4b6cdd039ae966a34cd3ccab9e0e5f7299280ad76fe1744882d86eedce0b                                                                                                                      0.0s
+ => => resolve docker.io/library/python:3.12-slim@sha256:d75c4b6cdd039ae966a34cd3ccab9e0e5f7299280ad76fe1744882d86eedce0b                                                                                                                      0.0s
+ => [internal] load build context                                                                                                                                                                                                              0.0s
+ => => transferring context: 70B                                                                                                                                                                                                               0.0s
+ => CACHED [2/5] WORKDIR /app                                                                                                                                                                                                                  0.0s
+ => CACHED [3/5] COPY requirements.txt .                                                                                                                                                                                                       0.0s
+ => CACHED [4/5] RUN pip install --no-cache-dir -r requirements.txt                                                                                                                                                                            0.0s
+ => CACHED [5/5] COPY embeddings.py .                                                                                                                                                                                                          0.0s
+ => exporting to image                                                                                                                                                                                                                         0.0s
+ => => exporting layers                                                                                                                                                                                                                        0.0s
+ => => exporting manifest sha256:8d76537b6e5819cfcfb35b6501ecf0556b85da9d1fef91cc3356098c5891d557                                                                                                                                              0.0s
+ => => exporting config sha256:848a988cb1b8e2b3d5f3e763e12432030424ef9f89af02a1ae7ac1b947717073                                                                                                                                                0.0s
+ => => exporting attestation manifest sha256:d270c421b3b6cc3f3b4503248a14915f3a1c98f55ac89ec23a90ccf1f75baece                                                                                                                                  0.0s
+ => => exporting manifest list sha256:aa7a3f426e44d3c775a876aa5708f1fe770956cb6d5947f4458a0e39a7a88887                                                                                                                                         0.0s
+ => => naming to docker.io/library/mdm-logs-analytics-transformation-layer-embedder:latest                                                                                                                                                     0.0s
+ => => unpacking to docker.io/library/mdm-logs-analytics-transformation-layer-embedder:latest                                                                                                                                                  0.0s
+ => resolving provenance for metadata file                                                                                                                                                                                                     0.0s
+[+] Running 2/2
+ ✔ mdm-logs-analytics-transformation-layer-embedder  Built                                                                                                                                                                                     0.0s 
+ ✔ Container embedder                                Recreated                                                                                                                                                                                 0.1s 
+Attaching to embedder, vector-db
+vector-db  | 
+vector-db  | PostgreSQL Database directory appears to contain a database; Skipping initialization
+vector-db  | 
+vector-db  | 2026-01-14 11:53:46.747 UTC [1] LOG:  starting PostgreSQL 16.11 (Debian 16.11-1.pgdg12+1) on aarch64-unknown-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit
+vector-db  | 2026-01-14 11:53:46.748 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+vector-db  | 2026-01-14 11:53:46.748 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+vector-db  | 2026-01-14 11:53:46.749 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+vector-db  | 2026-01-14 11:53:46.751 UTC [29] LOG:  database system was shut down at 2026-01-14 11:53:36 UTC
+vector-db  | 2026-01-14 11:53:46.753 UTC [1] LOG:  database system is ready to accept connections
+vector-db  | 2026-01-14 11:54:04.843 UTC [40] ERROR:  relation "mdm_events" does not exist at character 21
+vector-db  | 2026-01-14 11:54:04.843 UTC [40] STATEMENT:  SELECT id, raw FROM mdm_events
+embedder   | Loading model...
+embedder   | Connecting to Postgres…
+embedder   | Fetching rows…
+embedder   | Traceback (most recent call last):
+embedder   |   File "/app/embeddings.py", line 32, in <module>
+embedder   |     main()
+embedder   |   File "/app/embeddings.py", line 15, in main
+embedder   |     rows = cur.execute("SELECT id, raw FROM mdm_events").fetchall()
+embedder   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+embedder   |   File "/usr/local/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+embedder   |     raise ex.with_traceback(None)
+embedder   | psycopg.errors.UndefinedTable: relation "mdm_events" does not exist
+embedder   | LINE 1: SELECT id, raw FROM mdm_events
+embedder   |                             ^
+embedder exited with code 1 (restarting)
+vector-db  | 2026-01-14 11:54:11.313 UTC [42] ERROR:  relation "mdm_events" does not exist at character 21
+vector-db  | 2026-01-14 11:54:11.313 UTC [42] STATEMENT:  SELECT id, raw FROM mdm_events
+embedder   | Loading model...
+embedder   | Connecting to Postgres…
+embedder   | Fetching rows…
+embedder   | Traceback (most recent call last):able Watch
+embedder   |   File "/app/embeddings.py", line 32, in <module>
+embedder   |     main()
+embedder   |   File "/app/embeddings.py", line 15, in main
+embedder   |     rows = cur.execute("SELECT id, raw FROM mdm_events").fetchall()
+embedder   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+embedder   |   File "/usr/local/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+embedder   |     raise ex.with_traceback(None)
+embedder   | psycopg.errors.UndefinedTable: relation "mdm_events" does not exist
+embedder   | LINE 1: SELECT id, raw FROM mdm_events
+embedder   |                             ^
+vector-db  | 2026-01-14 11:54:11.572 UTC [39] ERROR:  relation "mdm_event" does not exist at character 22
+vector-db  | 2026-01-14 11:54:11.572 UTC [39] STATEMENT:  select count(*) from mdm_event;
+embedder exited with code 1 (restarting)
+vector-db  | 2026-01-14 11:54:17.801 UTC [43] ERROR:  relation "mdm_events" does not exist at character 21
+vector-db  | 2026-01-14 11:54:17.801 UTC [43] STATEMENT:  SELECT id, raw FROM mdm_events
+embedder   | Loading model...
+embedder   | Traceback (most recent call last):
+embedder   |   File "/app/embeddings.py", line 32, in <module>
+embedder   |     main()
+embedder   |   File "/app/embeddings.py", line 15, in main
+embedder   | Connecting to Postgres…
+embedder   | Fetching rows…
+embedder   |     rows = cur.execute("SELECT id, raw FROM mdm_events").fetchall()
+embedder   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+embedder   |   File "/usr/local/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+embedder   |     raise ex.with_traceback(None)
+embedder   | psycopg.errors.UndefinedTable: relation "mdm_events" does not exist
+embedder   | LINE 1: SELECT id, raw FROM mdm_events
+embedder   |                             ^
+embedder exited with code 1 (restarting)
+vector-db  | 2026-01-14 11:54:24.898 UTC [44] ERROR:  relation "mdm_events" does not exist at character 21
+vector-db  | 2026-01-14 11:54:24.898 UTC [44] STATEMENT:  SELECT id, raw FROM mdm_events
+embedder   | Loading model...
+embedder   | Connecting to Postgres…
+embedder   | Fetching rows…o View Config   w Enable Watch
+embedder   | Traceback (most recent call last):
+embedder   |   File "/app/embeddings.py", line 32, in <module>
+embedder   |     main()
+embedder   |   File "/app/embeddings.py", line 15, in main
+embedder   |     rows = cur.execute("SELECT id, raw FROM mdm_events").fetchall()
+embedder   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+embedder   |   File "/usr/local/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+embedder   |     raise ex.with_traceback(None)
+embedder   | psycopg.errors.UndefinedTable: relation "mdm_events" does not exist
+embedder   | LINE 1: SELECT id, raw FROM mdm_events
+embedder   |                             ^
+embedder exited with code 1 (restarting)
+vector-db  | 2026-01-14 11:54:31.764 UTC [39] ERROR:  relation "mdm_events" does not exist at character 22
+vector-db  | 2026-01-14 11:54:31.764 UTC [39] STATEMENT:  select count(*) from mdm_events;
+vector-db  | 2026-01-14 11:54:32.084 UTC [46] ERROR:  relation "mdm_events" does not exist at character 21
+vector-db  | 2026-01-14 11:54:32.084 UTC [46] STATEMENT:  SELECT id, raw FROM mdm_events
+embedder   | Loading model...
+embedder   | Connecting to Postgres…
+embedder   | Fetching rows…o View Config   w Enable Watch
+embedder   | Traceback (most recent call last):
+embedder   |   File "/app/embeddings.py", line 32, in <module>
+embedder   |     main()
+embedder   |   File "/app/embeddings.py", line 15, in main
+embedder   |     rows = cur.execute("SELECT id, raw FROM mdm_events").fetchall()
+embedder   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+embedder   |   File "/usr/local/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+embedder   |     raise ex.with_traceback(None)
+embedder   | psycopg.errors.UndefinedTable: relation "mdm_events" does not exist
+embedder   | LINE 1: SELECT id, raw FROM mdm_events
+embedder   |                             ^
+embedder exited with code 1 (restarting)
+vector-db  | 2026-01-14 11:54:40.636 UTC [47] ERROR:  relation "mdm_events" does not exist at character 21
+vector-db  | 2026-01-14 11:54:40.636 UTC [47] STATEMENT:  SELECT id, raw FROM mdm_events
+embedder   | Loading model...
+embedder   | Connecting to Postgres…
+embedder   | Fetching rows…o View Config   w Enable Watch
+embedder   | Traceback (most recent call last):
+embedder   |   File "/app/embeddings.py", line 32, in <module>
+embedder   |     main()
+embedder   |   File "/app/embeddings.py", line 15, in main
+embedder   |     rows = cur.execute("SELECT id, raw FROM mdm_events").fetchall()
+embedder   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+embedder   |   File "/usr/local/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+embedder   |     raise ex.with_traceback(None)
+embedder   | psycopg.errors.UndefinedTable: relation "mdm_events" does not exist
+embedder   | LINE 1: SELECT id, raw FROM mdm_events
+embedder   |                             ^
+embedder exited with code 1 (restarting)
+vector-db  | 2026-01-14 11:54:50.292 UTC [49] ERROR:  relation "mdm_events" does not exist at character 21
+vector-db  | 2026-01-14 11:54:50.292 UTC [49] STATEMENT:  SELECT id, raw FROM mdm_events
+embedder   | Traceback (most recent call last):
+embedder   |   File "/app/embeddings.py", line 32, in <module>
+embedder   |     main()p   o View Config   w Enable Watch
+embedder   |   File "/app/embeddings.py", line 15, in main
+embedder   |     rows = cur.execute("SELECT id, raw FROM mdm_events").fetchall()
+embedder   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+embedder   |   File "/usr/local/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+embedder   | Loading model...
+embedder   | Connecting to Postgres…
+embedder   | Fetching rows…
+embedder   |     raise ex.with_traceback(None)
+embedder   | psycopg.errors.UndefinedTable: relation "mdm_events" does not exist
+embedder   | LINE 1: SELECT id, raw FROM mdm_events
+embedder   |                             ^
+embedder exited with code 1 (restarting)
+vector-db  | 2026-01-14 11:55:03.000 UTC [50] ERROR:  relation "mdm_events" does not exist at character 21
+vector-db  | 2026-01-14 11:55:03.000 UTC [50] STATEMENT:  SELECT id, raw FROM mdm_events
+embedder   | Traceback (most recent call last):
+embedder   |   File "/app/embeddings.py", line 32, in <module>
+embedder   |     main()p   o View Config   w Enable Watch
+embedder   |   File "/app/embeddings.py", line 15, in main
+embedder   |     rows = cur.execute("SELECT id, raw FROM mdm_events").fetchall()
+embedder   | Loading model...
+embedder   | Connecting to Postgres…
+embedder   | Fetching rows…
+embedder   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+embedder   |   File "/usr/local/lib/python3.12/site-packages/psycopg/cursor.py", line 117, in execute
+embedder   |     raise ex.with_traceback(None)
+embedder   | psycopg.errors.UndefinedTable: relation "mdm_events" does not exist
+embedder   | LINE 1: SELECT id, raw FROM mdm_events
+embedder   |                             ^
+embedder exited with code 1 (restarting)
+vector-db  | 2026-01-14 11:55:22.105 UTC [52] ERROR:  relati

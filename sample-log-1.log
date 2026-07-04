@@ -1,0 +1,31 @@
+2026-04-17 10:15:32.123  INFO 1 --- [           main] com.example.demo.DemoApplication         : Starting DemoApplication on host123 with PID 1
+2026-04-17 10:15:32.456  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2026-04-17 10:15:33.789  INFO 1 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters
+2026-04-17 10:15:34.111  INFO 1 --- [           main] com.example.demo.DemoApplication         : Started DemoApplication in 2.5 seconds
+
+2026-04-17 10:16:01.001  INFO 1 --- [nio-8080-exec-1] c.e.demo.controller.UserController       : GET /api/users
+2026-04-17 10:16:01.045  INFO 1 --- [nio-8080-exec-1] c.e.demo.service.UserService             : Fetching all users
+2026-04-17 10:16:01.100  INFO 1 --- [nio-8080-exec-1] c.e.demo.controller.UserController       : Response: 200 OK
+
+2026-04-17 10:16:05.210  WARN 1 --- [nio-8080-exec-2] c.e.demo.service.UserService             : User not found with id=42
+2026-04-17 10:16:05.215  INFO 1 --- [nio-8080-exec-2] c.e.demo.controller.UserController       : Response: 404 NOT_FOUND
+
+2026-04-17 10:17:12.345 ERROR 1 --- [nio-8080-exec-3] c.e.demo.controller.UserController : Exception occurred
+java.lang.NullPointerException: Cannot invoke "User.getName()" because "user" is null
+at com.example.demo.service.UserService.getUserName(UserService.java:45)
+at com.example.demo.controller.UserController.getUser(UserController.java:30)
+at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
+
+2026-04-17 10:18:22.111 DEBUG 1 --- [nio-8080-exec-4] org.hibernate.SQL : select user0_.id as id1_0_, user0_.name as name2_0_ from users user0_
+2026-04-17 10:18:25.500 ERROR 1 --- [nio-8080-exec-4] o.h.engine.jdbc.spi.SqlExceptionHelper : SQL Error: 1064, SQLState: 42000
+2026-04-17 10:18:25.501 ERROR 1 --- [nio-8080-exec-4] o.h.engine.jdbc.spi.SqlExceptionHelper : You have an error in your SQL syntax
+
+2026-04-17 10:19:10.001 INFO 1 --- [nio-8080-exec-5] c.e.demo.service.PaymentService : Calling external payment API
+2026-04-17 10:19:11.100 ERROR 1 --- [nio-8080-exec-5] c.e.demo.service.PaymentService : API call failed with status 500
+
+2026-04-17 10:20:00.000 INFO 1 --- [pool-1-thread-1] c.e.demo.jobs.ReportJob : Starting report generation
+2026-04-17 10:20:08.750 ERROR 1 --- [pool-1-thread-1] c.e.demo.jobs.ReportJob : Failed to process chunk 3
+java.lang.RuntimeException: File not found
+at com.example.demo.jobs.ReportJob.process(ReportJob.java:67)
+
+2026-04-17 10:20:10.000 INFO 1 --- [pool-1-thread-1] c.e.demo.jobs.ReportJob : Job finished with errors
