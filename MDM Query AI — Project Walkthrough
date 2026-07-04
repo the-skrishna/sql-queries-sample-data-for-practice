@@ -1,0 +1,139 @@
+MDM Query AI — Project Walkthrough
+  
+  What Problem Are We Solving?
+  
+  Our company manages thousands of mobile devices (laptops, iPhones, etc.) through an MDM platform. Every device generates event logs — app installs, security updates,
+  policy failures, heartbeats, check-ins. These logs live in a PostgreSQL database with hundreds of thousands of rows.
+  
+  The problem: only engineers who know SQL can query this data. Support teams, security analysts, and managers need answers like "which devices failed security updates
+  last week?" or "are there any connectivity issues with MacBook Pro devices?" — but they can't write SQL. They file tickets, wait for engineers, and lose hours.
+  
+  MDM Query AI lets anyone ask questions in plain English and get instant answers.
+  
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  
+  How It Works (High Level)
+  
+  User: "Show me devices that failed app installs in the last 3 days"
+    ↓
+  REST API receives the question
+    ↓
+  GPT-4o-mini analyzes the question and decides HOW to retrieve data
+    ↓
+  Either: runs a SQL query  OR  runs a semantic similarity search
+    ↓
+  Results fed back to the LLM
+    ↓
+  LLM produces a human-readable answer
+    ↓
+  User gets: "I found 7 failed app installations across 4 devices..."
+  
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  
+  Tech Stack
+  
+  - Java 17 + Spring Boot 3.4 — REST API, connection pooling, configuration management
+  - LangChain4j — AI orchestration framework (tool calling, memory, prompt management)
+  - GPT-4o-mini — the LLM that understands questions and generates SQL
+  - PostgreSQL + pgvector — stores device events + vector embeddings for semantic search
+  - all-MiniLM-L6-v2 — lightweight embedding model running in-process (no external API call)
+  - Docker — containerized, production-ready deployment
+  
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  
+  Architecture
+  
+  It's a modular monolith with clean package separation:
+  
+  api/            → REST controller, request/response DTOs, exception handling
+  application/    → Business logic, session management
+  ai/             → LangChain4j AiService interface + tool implementations
+  config/         → Spring configuration, prompt construction, schema sync
+  
+  Single endpoint: POST /api/query with a JSON body { "query": "...", "sessionId": "..." }
+  
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  
+  The Two Retrieval Strategies
+  
+  The LLM has access to two tools and decides which one to use per question:
+  
+  1. SQL Executor — for structured questions
+  
+  │ "How many check-in events happened yesterday?" → SELECT count(*) FROM mdm_events WHERE event = 'check_in' AND created_at > '2026-05-22'
+  
+  2. Semantic Search — for conceptual questions
+  
+  │ "Are there any security issues?" → embeds the phrase, finds the most semantically similar log entries using pgvector cosine distance
+  
+  The LLM makes this decision based on rules in the system prompt. Structured filters (dates, counts, specific fields) → SQL. Concepts and topics → semantic search.
+  
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  
+  Key Design Decisions
+  
+  1. Conversational Memory
+  
+  Each session maintains a 20-message(100) sliding window. Users can ask follow-up questions like "what about last month?" without repeating context. Memory is per-session,
+  in-memory, keyed by sessionId.
+  
+  2. Dynamic Schema Awareness
+  
+  At startup, the app queries PostgreSQL's information_schema to get the actual table columns and types, validates the embedding dimension matches the model, and injects
+  the live schema into the system prompt. If someone adds a column to the table, the app picks it up on next restart — no code change needed.
+  
+  3. SQL Safety (Defence-in-Depth)
+  
+  Since the LLM generates SQL, we can't trust it blindly. Three layers:
+  
+  - Pre-check: must be SELECT, no semicolons, no comments, length limit
+  - EXPLAIN plan validation: PostgreSQL analyzes the query plan — we walk the tree and reject anything touching unauthorized tables, blocked columns, or disallowed
+  operations
+  - Read-only DB user: infrastructure-level guarantee that writes are impossible
+  
+  4. Single LLM Call Flow
+  
+  LangChain4j's AiService handles the full loop — user question → tool call → feed results back → generate answer — in a single orchestrated flow. No separate "formatter"
+  call. This cuts latency and halves token cost.
+  
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  
+  What Makes This an MVP (and What's Next)
+  
+  What we built:
+  
+  - Natural language querying over MDM events
+  - Hybrid retrieval (SQL + semantic search)
+  - Multi-turn conversations
+  - SQL injection protection
+  - Containerized deployment
+  - Health monitoring via Actuator
+  
+  What's planned for production hardening:
+  
+  - Authentication (API key or OAuth2)
+  - Rate limiting to control LLM costs
+  - Token usage tracking and budgeting
+  - Integration tests with Testcontainers
+  - Session TTL and eviction policies
+  - HTTPS / TLS termination
+  - Query cost estimation (reject expensive queries before execution)
+  
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  
+  Business Value
+  
+  - Support team can self-serve device investigations — no more waiting for engineering
+  - Security analysts can ask "show me failed security updates across all iPhones" in seconds
+  - Managers get instant fleet health summaries
+  - Engineers stop being interrupted for ad-hoc queries
+  
+  The MVP proves the concept works. The next phase is hardening it for multi-tenant production use with proper auth, cost controls, and observability.
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+kiro_guide · claude-opus-4.6 · ◔ 7%                                                                             ~/Beach/Langchain4j/migration/mdm-query-ai · (exploration)
+
+ ask a question or describe a task ↵
+                                                                                                                                                       /copy to clipboard
+
+
